@@ -28,7 +28,7 @@ module Webpack
         def asset_paths(source)
           raise WebpackError, manifest["errors"] unless manifest_bundled?
 
-          paths = manifest["assetsByChunkName"][source]
+          paths = manifest["entrypoints"][source]["assets"]
           if paths
             # Can be either a string or an array of strings.
             # Do not include source maps as they are not javascript
