@@ -28,11 +28,11 @@ module Webpack
         def asset_paths(source)
           raise WebpackError, manifest["errors"] unless manifest_bundled?
 
-          paths = manifest["entrypoints"][source]["assets"]
-          if paths
+          entry = manifest["entrypoints"][source]
+          if entry
             # Can be either a string or an array of strings.
             # Do not include source maps as they are not javascript
-            [paths].flatten.reject { |p| p =~ /.*\.map$/ }.map do |p|
+            [entry.fetch("assets")].flatten.reject { |p| p =~ /.*\.map$/ }.map do |p|
               "/#{::Rails.configuration.webpack.public_path}/#{p}"
             end
           else
