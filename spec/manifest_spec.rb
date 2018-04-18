@@ -8,6 +8,7 @@ describe "Webpack::Rails::Manifest" do
         "errors": [],
         "assetsByChunkName": {
           "entry1": "entry1.js",
+          "entry1-a": "entry1-a.js",
           "entry2": "entry2.js"
         },
         "entrypoints": {
@@ -95,6 +96,20 @@ describe "Webpack::Rails::Manifest" do
           error_manifest = JSON.parse(manifest).merge("errors" => []).to_json
           stub_request(:get, "http://server-host:4000/public_path/my_manifest.json").to_return(body: error_manifest, status: 200)
           expect { Webpack::Rails::Manifest.asset_paths("entry1") }.to_not raise_error
+        end
+      end
+    end
+
+    describe :chunk_path do
+      context "when the chunk is in the manifest" do
+        it "returns the path to the chunk" do
+          expect(Webpack::Rails::Manifest.chunk_path('entry1-a')).to eq("/public_path/entry1-a.js")
+        end
+      end
+
+      context "when the chunk is not in the manifest" do
+        it "returns the path to the chunk" do
+          expect { Webpack::Rails::Manifest.chunk_path('not_a_chunk') }.to raise_error(Webpack::Rails::Manifest::EntryPointMissingError)
         end
       end
     end

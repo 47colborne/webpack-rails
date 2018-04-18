@@ -18,19 +18,29 @@ module Webpack
         paths = Webpack::Rails::Manifest.asset_paths(source)
         paths = paths.select { |p| p.ends_with? ".#{extension}" } if extension
 
-        port = ::Rails.configuration.webpack.dev_server.port
-        protocol = ::Rails.configuration.webpack.dev_server.https ? 'https' : 'http'
-
-        host = ::Rails.configuration.webpack.dev_server.host
-        host = instance_eval(&host) if host.respond_to?(:call)
-
         if ::Rails.configuration.webpack.dev_server.enabled
-          paths.map! do |p|
-            "#{protocol}://#{host}:#{port}#{p}"
-          end
+          paths.map! { |p| full_path(p) }
         end
 
         paths
+      end
+
+      # Returns the path of a specific chunk by name
+      def webpack_chunk_path(name)
+        full_path(Webpack::Rails::Manifest.chunk_path(name))
+      end
+
+      private
+
+      def full_path(path)
+        return path unless ::Rails.configuration.webpack.dev_server.enabled
+
+        protocol = ::Rails.configuration.webpack.dev_server.https ? 'https' : 'http'
+        host = ::Rails.configuration.webpack.dev_server.host
+        host = instance_eval(&host) if host.respond_to?(:call)
+        port = ::Rails.configuration.webpack.dev_server.port
+
+        "#{protocol}://#{host}:#{port}#{path}"
       end
     end
   end

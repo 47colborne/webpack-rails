@@ -40,6 +40,18 @@ module Webpack
           end
         end
 
+        # :nodoc:
+        def chunk_path(name)
+          raise WebpackError, manifest["errors"] unless manifest_bundled?
+
+          asset = manifest["assetsByChunkName"][name]
+          if asset
+            "/#{::Rails.configuration.webpack.public_path}/#{asset}"
+          else
+            raise EntryPointMissingError, "Can't find entry point '#{name}' in webpack manifest"
+          end
+        end
+
         private
 
         def manifest_bundled?
