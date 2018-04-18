@@ -7,8 +7,21 @@ describe "Webpack::Rails::Manifest" do
       {
         "errors": [],
         "assetsByChunkName": {
-          "entry1": [ "entry1.js", "entry1-a.js" ],
+          "entry1": "entry1.js",
           "entry2": "entry2.js"
+        },
+        "entrypoints": {
+          "entry1": {
+            "assets": [
+              "entry1.js",
+              "entry1-a.js"
+            ]
+          },
+          "entry2": {
+            "assets": [
+              "entry2.js"
+            ]
+          }
         }
       }
     EOF
